@@ -30,6 +30,11 @@ app.get('/3DConnect4.html', function(req,res){
 	})
 })
 
+app.get('/chat.html',function(req,res){
+  res.sendFile(__dirname+'/chatroom.html',function(){res.end();})
+})
+
+
 setInterval(function(){
 	var month = new Date().getMonth()+1;
 	now = new Date().getFullYear().toString()+"-"+month.toString()+"-"+new Date().getDate().toString()+" ";
@@ -159,6 +164,21 @@ io.sockets.on('connection', function(socket){
 			io.emit('player leave');
 		}
 	})
+    
+    //chatroom==========
+    
+    setInterval(function(){
+        socket.emit("now",{date:now});
+    },1000)
+
+    socket.on('sendchat', function(text,name){
+        console.log(text+" "+name+" "+now);
+        io.emit("pubchat", text, name ,now);
+    });
+
+    socket.on('disconnect', function(){
+        
+    })
 })
 
 server.listen(7122);
