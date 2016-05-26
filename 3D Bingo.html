@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>3D Bingo.com</title>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+		<script src="three.min.js"></script>
+        <!-- <script src="/socket.io/socket.io.js"></script> -->
+		<script>
+            // var socket = io('https://localhost:7122');
+
+			//set Introduction
+			container = document.createElement( 'div' );
+			document.body.appendChild( container );
+			var info = document.createElement( 'div' );
+			info.style.position = 'absolute';
+			info.style.top = '20px';
+			info.style.width = '100%';
+			info.style.textAlign = 'center';
+			info.innerHTML = '<h1>1P:Blue,2P:Red  GrayCube means Clickable!</h1>';
+			container.appendChild( info );
+
+			//setting up the renderer
+			var scene = new THREE.Scene();
+			var camera = new THREE.PerspectiveCamera( 70, window.innerWidth/window.innerHeight, 1, 1000 );
+			var renderer = new THREE.WebGLRenderer();
+
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			document.body.appendChild( renderer.domElement );
+			renderer.setClearColor( 0xbbbbbb );
+
+			//set material
+			var geometry = new THREE.BoxGeometry( 5, 0.1, 5  );
+			var ballGeometry = new THREE.SphereGeometry(0.2, 32, 32);//特殊球球形
+			var colorTransparent= new THREE.MeshLambertMaterial( {  visible:false } );
+			var colorGreen = new THREE.MeshLambertMaterial( { color: 0x555555, opacity: 0.3, transparent: true } );
+			var colorBlue  = new THREE.MeshLambertMaterial( { color: 0x0000ff  } );
+			var TransBlue  = new THREE.MeshLambertMaterial( { color: 0x0000ff, opacity: 0.6, transparent: true } );
+			var colorRed   = new THREE.MeshLambertMaterial( { color: 0xff0000  } );
+			var TransRed   = new THREE.MeshLambertMaterial( { color: 0xff0000, opacity: 0.6, transparent: true } );
+			var colorGray  = new THREE.MeshLambertMaterial( { color: 0x222222  } );
+			var colorcube  = new THREE.MeshLambertMaterial( { color: 0x00ff00  } );
+
+			//set basic(called cube)
+			var cube =  new THREE.Mesh( geometry, colorcube );
+			scene.add( cube );
+			cube.position.x = 2.5;
+			cube.position.z = 2.5;
+
+			//set up cubes
+			var cubes = [];
+			var cubesGeometry = new THREE.BoxGeometry( 0.5,0.5,0.5 );
+			for(var f=0; f<64; f++){
+				var cubesSet=  new THREE.Mesh( cubesGeometry, colorTransparent );
+				cubes.push(cubesSet);
+				scene.add(cubes[f]);
+				cubes[f].situation=0;
+				cubes[f].Num = f;
+				if(f%4==0)cubes[f].material = colorGreen;
+			}
+
+			//set the cubes position
+			var moveCubes = function(k){
+				cubes[k].position.x += ( (k-k%16)/16 ) + 1;
+				cubes[k].position.y += k%4 + 0.4;
+				cubes[k].position.z += (k%16-k%4)/4 + 1;
+				renderer.render(scene, camera);
+			};
+			for(var N=0; N<64; N++)moveCubes(N);
+			
+			//set light
+			var ambientLight = new THREE.AmbientLight( 0x888888 ,0.5 );
+			scene.add( ambientLight );
+			var directionalLight = new THREE.DirectionalLight( 0xcccccc );
+			directionalLight.position.set( 1,2,2 ).normalize();
+			scene.add( directionalLight );
+			if(cube.material == colorcube)cube.material = colorGray;
+
+			//滑鼠控制視角
+			var manualControl = false;
+			var longitude = 0;
+			var latitude = 0;
+			var savedX;
+			var savedY;
+			var savedLongitude;
+			var savedLatitude;
+			var mouse = new THREE.Vector2();
+			camera.target = new THREE.Vector3(0, 0, 0);
+
+			// listeners
+			document.addEventListener("mousedown", onDocumentMouseDown, false);
+			document.addEventListener("mousemove", onDocumentMouseMove, false);
+			document.addEventListener("mouseup", onDocumentMouseUp, false);
+            
+            //set raycaster
+            var raycaster,INTERSECTED;
+				raycaster = new THREE.Raycaster();
+            var FirstVisibleObject;
+			var selected;
+			var player=1;
+			var moved = false;
+
+  			render();
+
+            function render(){
+
+				requestAnimationFrame(render);
+
+				// limiting latitude from 0 to 85
+                latitude = Math.max(-85, Math.min(0, latitude));
+
+				//set camera
+				camera.target.x = 500 * Math.sin(THREE.Math.degToRad(90 - latitude)) * Math.cos(THREE.Math.degToRad(longitude));
+				camera.target.y = 500 * Math.cos(THREE.Math.degToRad(90 - latitude));
+				camera.target.z = 500 * Math.sin(THREE.Math.degToRad(90 - latitude)) * Math.sin(THREE.Math.degToRad(longitude));
+				camera.lookAt(camera.target);
+				camera.position.x = -camera.target.x/60 +2.5;
+				camera.position.y = -camera.target.y/60 + 1;
+				camera.position.z = -camera.target.z/60 +2.5;
+
+				//set raycaster
+				raycaster.setFromCamera( mouse, camera );
+				var intersects = raycaster.intersectObjects( scene.children );
+				if(intersects.length==0)FirstVisibleObject=null;
+				else{
+				for(var k=0; k < intersects.length; k++){
+					if( intersects[k].object.material != colorTransparent && intersects[k].object.geometry!= geometry ){
+						FirstVisibleObject = intersects[k].object;
+						break;
+					}
+					FirstVisibleObject = null;
+				}}
+
+				// player action
+				if ( FirstVisibleObject != null ) {
+					if ( selected != FirstVisibleObject ) {
+						if( selected && selected.situation == 0 ) selected.material=colorGreen;
+							selected = FirstVisibleObject;
+						if( selected.situation == 0){
+                            selected.material = TransBlue;
+                            // console.log(selected);
+
+                        }
+					}
+				}
+				else{
+					if(selected && selected.situation == 0)selected.material = colorGreen;
+					selected = null;
+				}
+
+				if( manualControl == true && moved==false){
+					if( FirstVisibleObject && FirstVisibleObject.situation == 0){
+						// FirstVisibleObject.material = colorBlue;
+						// FirstVisibleObject.situation = 1;
+						// player = 2;
+						moved = true;
+						if( FirstVisibleObject.Num%4 != 3)cubes[FirstVisibleObject.Num+1].material = colorGreen;
+                        // socket.emit('down', FirstVisibleObject.Num);
+
+					}
+				}
+                // socket.on('downed',function(number,player){
+                //     cubes[number].material = player==1 ? colorBlue : colorRed;
+                // })
+                renderer.render(scene, camera);
+            }
+
+
+
+
+			function onDocumentMouseDown(event){
+
+				event.preventDefault();
+
+				manualControl = true;
+
+				savedX = event.clientX;
+				savedY = event.clientY;
+
+				savedLongitude = longitude;
+				savedLatitude = latitude;
+				moved = false;
+			}
+
+			function onDocumentMouseMove(event){
+				event.preventDefault();
+				if(manualControl){
+					longitude = -(savedX - event.clientX) * 0.1 + savedLongitude;
+					latitude = -(event.clientY - savedY) * 0.1 + savedLatitude;
+				};
+				mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+				mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+				moved = true;
+			}
+
+			function onDocumentMouseUp(event){
+
+				manualControl = false;
+			}
+
+		</script>
+	</body>
+</html>

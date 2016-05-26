@@ -1,0 +1,65 @@
+<!DOCTYPE <html>
+<html>
+	<head>
+		<title>3D Connect 4</title>
+	</head>
+	<frameset cols="60%,*">
+		<frame src="3DConnect4.html">
+		<frame src="chatroom.html">
+	</frameset>
+	<body>
+	</body>
+</html>
+
+<!-- <script src="/static/jQuery/jquery-2.1.4.min.js"></script> -->
+<script src="/socket.io/socket.io.js"></script>
+<!-- <script src="/static/jQuery/url.min.js"></script> -->
+<script type="text/javascript">
+	var socket = io('https://weak.infor.org')
+
+	window.addEventListener('load',function(){
+
+		//login request
+		var name = prompt("name","請輸入你的名字",function(){
+			var join = confirm("請問是否加入遊戲?(旁觀模式請選擇取消)",function(){
+				if(name!=null){
+					socket.emit("loginreq",name,join)
+				}
+			})
+		})
+
+		document.getElementById('back').addEventListener('click', function(){
+			window.location='http://tdcweb.xyz:7122'
+		})
+		document.getElementById('login!').addEventListener('click', function(){
+			var usernam = document.getElementById('username').value
+			var passw = document.getElementById('pass').value
+			if(usernam == "" || passw == ""){
+				$('#wrn').text("invalid login")
+			}
+			else{
+				socket.emit('loginreq', usernam, passw)
+			}
+		})
+		document.getElementById('out').addEventListener('click', function(){
+			document.cookie = ""
+			location.reload(true)
+		})
+	})
+	socket.on('logindone', function(username, passwordd){
+		$('#wrn').text("successful login!")
+		$('#login').remove()
+		logined = true
+		whoami = username
+		pw = passwordd
+		var nowdate = new Date()
+		nowdate.setDate(nowdate.getDate()+ 3)
+		document.cookie = "username="+username+";pass="+pw+";expire"+nowdate.toGMTString()
+	})
+	socket.on('loginfail', function(){
+		$('#wrn').text("username or password wrong!")
+	})
+	socket.on('noperadd', function(){
+		alert("jizz");
+	})
+</script>
