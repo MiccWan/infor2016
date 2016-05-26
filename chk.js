@@ -11,7 +11,8 @@ var chk = function(x,y,z){
                 res[line]-=jizz;
             }
         }
-
+    }
+    
     var win1=false;win2=false;
     for(var i=0;i<res.length;i++){
         if(res[i]==15){

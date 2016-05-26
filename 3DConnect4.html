@@ -60,7 +60,10 @@
 				scene.add(cubes[f]);
 				cubes[f].situation=0;
 				cubes[f].Num = f;
-				if(f%4==0)cubes[f].material = colorClickable;
+				if(f%4==0){
+					cubes[f].material = colorClickable;
+					cubes[f].situation = 3;
+				}
 			}
 
 			//set the cubes position
@@ -142,22 +145,22 @@
 
 				if ( FirstVisibleObject != null ) {
 					if ( selected != FirstVisibleObject ) {
-						if( selected && selected.situation == 0 ) selected.material=colorClickable;
+						if( selected && selected.situation == 3 ) selected.material=colorClickable;
 							selected = FirstVisibleObject;
-						if( selected.situation == 0){
+						if( selected.situation == 3){
                             selected.material = TransBlue;
                         }
 					}
 				}
 				else{
-					if(selected && selected.situation == 0)selected.material = colorClickable;
+					if(selected && selected.situation == 3)selected.material = colorClickable;
 					selected = null;
 				}
 
 				if( manualControl == true && moved==false ){
-					if( FirstVisibleObject && FirstVisibleObject.situation == 0){
+					if( FirstVisibleObject && FirstVisibleObject.situation == 3){
 						moved = true;
-						if( FirstVisibleObject.Num%4 != 3)cubes[FirstVisibleObject.Num+1].material = colorClickable;
+						// if( FirstVisibleObject.Num%4 != 3)cubes[FirstVisibleObject.Num+1].material = colorClickable;
 						socket.emit('down', FirstVisibleObject.Num);
 					}
 				}
@@ -210,6 +213,7 @@
 					if(gameStat[i]==1)cubes[i].material=colorBlue;
 					if(gameStat[i]==2)cubes[i].material=colorRed;
 					if(gameStat[i]==3)cubes[i].material=colorClickable;
+					cubes[i].situation=gameStat[i];
 				}
 			}
 

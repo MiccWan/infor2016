@@ -111,15 +111,12 @@ var chk = function(id){
     }
     for(var i=0;i<res.length;i++){
         if(res[i]==15){
-        	console.log("re1");
             return 1;
         }
         if(res[i]==-15){
-        	console.log("re2");
             return 2;
         }
     }
-    console.log(res);
     return 0;
 }
 
@@ -142,6 +139,7 @@ io.sockets.on('connection', function(socket){
 		}
 		if( id%4 != 3)gameStat[id+1]=3;
 		io.emit('downed',gameStat,player);
+		console.log(gameStat)
 		player = player==1 ? 2 : 1;
 	})
 	socket.on('disconnection',function(){
