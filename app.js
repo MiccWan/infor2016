@@ -23,8 +23,9 @@ app.get('/', function(req,res){
 		res.end();
 	})
 })
+
 app.get('/3DConnect4.html', function(req,res){
-	res.sendFile(__dirname+'3D Bingo.html',function(){
+	res.sendFile(__dirname+'/3DConnect4.html',function(){
 		res.end();
 	})
 })
@@ -63,29 +64,63 @@ for(var i=0;i<64;i++){
 	gameStat[i]=0;
 }
 
-var chk = function(){
+var chk = function(id){
 	var stat = [];
 	for(var i=0;i<4;i++){
-	    stat.push([]);
-	    for(var j=0;j<4;j++){
-	        stat[i].push([]);
-	        for(var k=0;k<4;k++){
-	            stat[i][j].push([]);
-	        }
-	    }
-	}
-	var i=0,j=0,k=0;
-	for(var l=0;l<64;l++){
-	    if(i==4)i=0;
-	    if(j==4)j=0;
-	    if(k==4)k=0;
-	    gameStat[l]=chk[i][j][k];
-	    i++;
-	    j++;
-	    k++;
+		stat[i]=[];
+		for(var j=0;j<4;j++){
+			stat[i][j]=[];
+		}
 	}
 
-	// chk part
+	for(var i=0,j=0,k=0,l=0;l<64;i++,l++){
+	    if(i==4){
+	    	i=0;
+	    	j++;
+	    }
+	    if(j==4){
+	    	j=0;
+	    	k++
+		}
+	    if(k==4){
+	    	k=0;
+	    	throw "k==4";
+	    }
+	    stat[i][j][k]=gameStat[l];
+
+	}
+	// console.log(gameStat);
+	// console.log(stat);
+
+	// stat part
+	var x=id%4;
+	var y=parseInt(id/4)%4;
+	var z=parseInt(id/16);
+	var jizz=1;
+    var res=[0,0,0,0,0,0,0,0,0,0,0,0,0];
+    for(var i=0;i<4;i++,jizz*=2){
+        var point = [stat[x][y][i],stat[x][i][z],stat[i][y][z],stat[x][i][i],stat[x][i][3-i],stat[i][y][i],stat[i][y][3-i],stat[i][i][z],stat[i][3-i][z],stat[i][i][i],stat[i][i][3-i],stat[3-i][i][i],stat[3-i][i][3-i]];
+        for(var line=0;line<point.length;line++){
+            if(point[line]==1){
+                res[line]+=jizz;
+            }
+            if(point[line]==2){
+                res[line]-=jizz;
+            }
+        }
+    }
+    for(var i=0;i<res.length;i++){
+        if(res[i]==15){
+        	console.log("re1");
+            return 1;
+        }
+        if(res[i]==-15){
+        	console.log("re2");
+            return 2;
+        }
+    }
+    console.log(res);
+    return 0;
 }
 
 io.sockets.on('connection', function(socket){
@@ -100,10 +135,12 @@ io.sockets.on('connection', function(socket){
 	})
 	socket.on('down',function(id){
 		gameStat[id]=player;
-		if(chk()){
-
+		var winner=chk(id);
+		if(winner){
+			// socket.emit('gameOver',playerList[winner-1]["name"])
+			socket.emit('gameOver',"got it!")
 		}
-		if( id%4 != 3)gameStat[id]=3;
+		if( id%4 != 3)gameStat[id+1]=3;
 		io.emit('downed',gameStat,player);
 		player = player==1 ? 2 : 1;
 	})

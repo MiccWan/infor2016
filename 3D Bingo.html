@@ -8,10 +8,10 @@
 		</style>
 	</head>
 	<body>
-		<script src="three.min.js"></script>
-        <!-- <script src="/socket.io/socket.io.js"></script> -->
+		<script src="/static/three.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
 		<script>
-            // var socket = io('https://localhost:7122');
+            var socket = io('https://localhost:7122');
 
 			//set Introduction
 			container = document.createElement( 'div' );
@@ -37,7 +37,7 @@
 			var geometry = new THREE.BoxGeometry( 5, 0.1, 5  );
 			var ballGeometry = new THREE.SphereGeometry(0.2, 32, 32);//特殊球球形
 			var colorTransparent= new THREE.MeshLambertMaterial( {  visible:false } );
-			var colorGreen = new THREE.MeshLambertMaterial( { color: 0x555555, opacity: 0.3, transparent: true } );
+			var colorClickable = new THREE.MeshLambertMaterial( { color: 0x555555, opacity: 0.3, transparent: true } );
 			var colorBlue  = new THREE.MeshLambertMaterial( { color: 0x0000ff  } );
 			var TransBlue  = new THREE.MeshLambertMaterial( { color: 0x0000ff, opacity: 0.6, transparent: true } );
 			var colorRed   = new THREE.MeshLambertMaterial( { color: 0xff0000  } );
@@ -60,7 +60,7 @@
 				scene.add(cubes[f]);
 				cubes[f].situation=0;
 				cubes[f].Num = f;
-				if(f%4==0)cubes[f].material = colorGreen;
+				if(f%4==0)cubes[f].material = colorClickable;
 			}
 
 			//set the cubes position
@@ -138,7 +138,7 @@
 				// player action
 				if ( FirstVisibleObject != null ) {
 					if ( selected != FirstVisibleObject ) {
-						if( selected && selected.situation == 0 ) selected.material=colorGreen;
+						if( selected && selected.situation == 0 ) selected.material=colorClickable;
 							selected = FirstVisibleObject;
 						if( selected.situation == 0){
                             selected.material = TransBlue;
@@ -148,7 +148,7 @@
 					}
 				}
 				else{
-					if(selected && selected.situation == 0)selected.material = colorGreen;
+					if(selected && selected.situation == 0)selected.material = colorClickable;
 					selected = null;
 				}
 
@@ -158,14 +158,14 @@
 						// FirstVisibleObject.situation = 1;
 						// player = 2;
 						moved = true;
-						if( FirstVisibleObject.Num%4 != 3)cubes[FirstVisibleObject.Num+1].material = colorGreen;
-                        // socket.emit('down', FirstVisibleObject.Num);
+						if( FirstVisibleObject.Num%4 != 3)cubes[FirstVisibleObject.Num+1].material = colorClickable;
+                        socket.emit('down', FirstVisibleObject.Num);
 
 					}
 				}
-                // socket.on('downed',function(number,player){
-                //     cubes[number].material = player==1 ? colorBlue : colorRed;
-                // })
+                socket.on('downed',function(number,player){
+                    cubes[number].material = player==1 ? colorBlue : colorRed;
+                })
                 renderer.render(scene, camera);
             }
 
