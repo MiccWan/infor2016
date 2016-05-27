@@ -128,14 +128,15 @@ var chk = function(id){
     return 0;
 }
 
-var gameStart function(){
-    for(;;){    
+var gameStart = function(){
+    setInterval(function(){
         if(waitingList.length>1){
             playerList = [];
             playerList[0] = waitingList.shift(1);
             playerList[1] = waitingList.shift(1);
+            return ;
         }
-    }
+    },100)
 }
 
 gameStart();
@@ -160,7 +161,7 @@ io.sockets.on('connection', function(socket){
             }
             if( id%4 != 3)gameStat[id+1]=3;
             io.emit('downed',gameStat,player);
-            console.log(gameStat)
+            //console.log(gameStat)
             player = player==1 ? 2 : 1;
         }
 	})
@@ -187,7 +188,7 @@ io.sockets.on('connection', function(socket){
     },1000)
 
     socket.on('sendchat', function(text,name){
-        console.log(text+" "+name+" "+now);
+        console.log(name+" "+text+" "+now);
         io.emit("pubchat", text, name ,now);
     });
 
@@ -196,7 +197,7 @@ io.sockets.on('connection', function(socket){
     })
 })
 
-server.listen(2319);
+server.listen(2329);
 
 
 
