@@ -1,144 +1,93 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<html>
+	<head>
+		<title>chatroom</title>
+  	 		<script src="/socket.io/socket.io.js"></script>
+   			<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+   			<style>
+				#all {
+					margin: 0 auto;
+					max-width: 500px;
+					left: 20px;
+					top: 20px;
+				}
+				#chatarea , #loginarea {
+					position: fixed;
+					bottom: 20px;
+					left: 20px;
+				}
+				#date {
+					position: fixed;
+					bottom: 20px;
+					right: 20px;
+				}
+				#wrn {
+					position: fixed;
+					bottom: 100px;
+					left: 60px;
+				}
+				.button {
+					position: relative;
+					left: 235px;
+					bottom: 26px;
+				}
+				#pass {
+					position: relative;
+					left: 3px;
+				}
+				.button2 {
+					position: relative;
+					left: 0;
+					bottom: 0;
+				}
+				.msgs .time {
+					font-size: 12px;
+					color: #aaaaaa;
+					text-align: right;
+					position: relative;
+					top: -10px
+				}
+				.msgs .mes{
+					position: relative;
+					height: 0;
+				}
+				.msgs {
+					position: relative;
+					max-width: 500px;
+				}
+   			</style>
+	</head>
 
-    <title>Chat room</title>
+	<body>
+		<div id="all">
+			
+			<div id="wrn" style="color:red;font-size:20px"></div>
 
-    <link href="static/css/bootstrap.min.css" rel="stylesheet">
-    <link href="static/css/style.css" rel="stylesheet">
+			<input type="text" name="message" id="text"><input type="button" value="send" onclick="sendtextfunction()" class="button2">
+			
 
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="/static/jQuery/jquery-2.1.4.min.js"></script>
+			<div id="date"></div>
+			<div class="msgs"></div>
 
-    <style>
-    	.msgs .time {
-			font-size: 12px;
-			color: #aaaaaa;
-			text-align: right;
-			position: relative;
-			top: -10px
-		}
-		.msgs .mes{
-			position: relative;
-			height: 0;
-		}
-		.msgs {
-			position: relative;
-			max-width: 500px;
-		}
-    </style>
-  </head>
-  <body>
-
-    <div class="container-fluid">
-	<div class="row">
-		<div class="col-md-12">
-			<nav class="navbar navbar-default" role="navigation">
-				<div class="navbar-header">
-					 
-					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-						 <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
-					</button> <a class="navbar-brand" href="http://tdcweb.xyz:3000">Chatroom</a>
-				</div>
-				
-				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-					<ul class="nav navbar-nav">
-						<li>
-							<a href="http://jizzing.infor.org">Home</a>
-						</li>
-						<li class="active">
-							<a href="http://jizzing.infor.org/chat.html">Start Chatting!</a>
-						</li>
-					</ul>
-					<ul class="nav navbar-nav navbar-right">
-						<li>
-							<a href="http://jizzing.infor.org">Leave</a>
-						</li>
-					</ul>
-				</div>
-			</nav>
-			<div class="row">
-				<div class="col-md-2 col-sm-2 col-lg-2 wrn" id="wrn">
-				</div>
-				<div id="loginarea"></div>
-				<div id="chatarea"></div>
-				<div class="col-md-4 col-sm-4 col-lg-4" id="date">
-					<p>
-						time append
-					</p>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col-md-4 col-sm-4 col-lg-4"></div>
-				<div class="col-md-4 col-sm-4 col-lg-4">
-					<div class="msgs align-center"></div>
-				</div>
-				<div class="col-md-4 col-sm-4 col-lg-4"></div>
-			</div>
 		</div>
-	</div>
-</div>
-
-    <script src="static/js/jquery.min.js"></script>
-    <script src="static/js/bootstrap.min.js"></script>
-    <script src="static/js/scripts.js"></script>
-  </body>
+	</body>
 </html>
-<script>
-	var socket = io('http://jizzing.infor.org');
 
-	var cntlog=0;
-	var cntchat=0;
+<script>
+	var socket = io('http://210.71.78.200:2319');
+
 	
 	var month = new Date().getMonth()+1;
 	var now = new Date().getFullYear().toString()+"-"+month.toString()+"-"+new Date().getDate().toString()+" "+new Date().getHours().toString()+":"+new Date().getMinutes().toString()+":"+new Date().getSeconds().toString();
-	var username;
-	var nickname;
-	socket.on("who",function(){
-		if(cntlog==0){
-			$('#loginarea').append('<div class="col-md-6 col-sm-6 col-lg-6" id="loginarea"><form class="form-horizontal" role="form"><div class="form-group"><label for="inputUsername3" class="col-md-2 col-sm-3 col-xs-2 control-label">Username</label><div class="col-md-10 col-sm-9 col-xs-8"><input type="username" class="form-control" id="username"></div></div><div class="form-group"><label for="inputPassword3" class="col-md-2 col-sm-3 col-xs-2 control-label">Password</label><div class="col-md-9 col-sm-6 col-xs-8"><input type="password" class="form-control" id="pass"></div><div class="col-md-1 col-sm-4 col-xs-2"><input type="button" value="log in" onclick="loginfunction()" class="btn btn-default"></div></div></form></div></div>');
-			cntlog=cntlog+1;
-		}
-	});
-
-	socket.on('nou',function(){
-		$('#wrn').text('unknown username');
-		document.getElementById('username').value="";
-		document.getElementById('pass').value="";
-	});
-
-	socket.on('wp',function(){
-		$('#wrn').text('wrong password');
-		document.getElementById('pass').value="";
-	});;
-
-	socket.on('logindone',function(nick){
-		nickname=nick;
-		if(cntchat==0){
-			$('#loginarea').remove();
-			$('#chatarea').append('<div class="col-md-6 col-sm-6 col-lg-6" id="loginarea"><form class="form-horizontal" role="form"><div class="form-group"><label for="inputUsername3" class="col-md-2 col-sm-3 col-xs-2 control-label">message</label><div class="col-md-9 col-sm-6 col-xs-8"><input type="text" class="form-control" id="text" name="message"></div><div class="col-md-1 col-sm-4 col-xs-2"><input type="button" value="send" onclick="sendtextfunction()" class="btn btn-default"></div></div></form></div>');
-			cntchat=cntchat+1;
-		}
-		$('#wrn').text('');
-	})
+	var username = prompt("","");
 
 	var sendtextfunction = function(){
 		var text = document.getElementById('text').value; 
 		if(text!=""){
-			socket.emit('sendchat', text, nickname);
+			socket.emit('sendchat', text, username);
+            console.log(text + ":" + username);
 		}
       	document.getElementById('text').value="";
 	};
-
-	var loginfunction = function(){
-		var username = document.getElementById('username').value; 
-	 	var pass = document.getElementById('pass').value;
- 	 	socket.emit('loginq',username,pass);
- 		document.getElementById('pass').value="";
- 	};
 
 	socket.on("pubchat",function(text ,sendname ,time){
 		//give text to html
@@ -146,12 +95,12 @@
 	});
 
 	socket.on('now', function(data) {
- 		$('#date').text(""+data.date);
+        	$('#date').text(data.date);
 	});
 
-        socket.on('sbc', function(who, time){
+    socket.on('sbc', function(who, time){
 		$('.msgs').append("<p class='mes'>"+who+" join the chat</p><p class='time'>"+time+"</p>");
-        });
+    });
 
 	socket.on('leave', function(who,time){
 		$('.msgs').append("<p class='mes'>"+who+" leave the chat</p><p class='time'>"+time+"</p>");

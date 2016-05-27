@@ -11,7 +11,7 @@
 		<script src="/static/three.min.js"></script>
         <script src="/socket.io/socket.io.js"></script>
 		<script>
-            var socket = io('http://localhost:7122');
+            var socket = io('http://210.71.78.200:2319');
 
 			//set Introduction
 			container = document.createElement( 'div' );
@@ -111,6 +111,8 @@
 
             function render(){
 
+
+                renderer.setSize( window.innerWidth,window.innerHeight);
 				requestAnimationFrame(render);
 
 				// limiting latitude from 0 to 85

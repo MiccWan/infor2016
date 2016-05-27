@@ -30,8 +30,10 @@ app.get('/3DConnect4.html', function(req,res){
 	})
 })
 
-app.get('/chat.html',function(req,res){
-  res.sendFile(__dirname+'/chatroom.html',function(){res.end();})
+app.get('/chatroom.html',function(req,res){
+  res.sendFile(__dirname+'/chatroom.html',function(){
+    res.end();
+  })
 })
 
 
@@ -66,7 +68,8 @@ var onlineList = [];
 var player = 1;
 var gameStat = [];
 for(var i=0;i<64;i++){
-	gameStat[i]=0;
+    if(i%4==0)gameStat[i]=3;
+    else gameStat[i]=0;
 }
 
 var chk = function(id){
@@ -136,16 +139,18 @@ io.sockets.on('connection', function(socket){
 		onlineList.push({name:name,id:id});
 	})
 	socket.on('down',function(id){
-		gameStat[id]=player;
-		var winner=chk(id);
-		if(winner){
-			// socket.emit('gameOver',playerList[winner-1]["name"])
-			socket.emit('gameOver',"got it!")
-		}
-		if( id%4 != 3)gameStat[id+1]=3;
-		io.emit('downed',gameStat,player);
-		console.log(gameStat)
-		player = player==1 ? 2 : 1;
+        if(socket.id==playerList[player-1]){
+            gameStat[id]=player;
+            var winner=chk(id);
+            if(winner){
+                // socket.emit('gameOver',playerList[winner-1]["name"])
+                socket.emit('gameOver',"got it!")
+            }
+            if( id%4 != 3)gameStat[id+1]=3;
+            io.emit('downed',gameStat,player);
+            console.log(gameStat)
+            player = player==1 ? 2 : 1;
+        }
 	})
 	socket.on('disconnection',function(){
 		for(var i=0;i<onlineList.length;i++){
@@ -179,7 +184,7 @@ io.sockets.on('connection', function(socket){
     })
 })
 
-server.listen(7122);
+server.listen(2319);
 
 
 
