@@ -7,11 +7,24 @@
 			canvas { width: 100%; height: 100% }
 		</style>
 	</head>
-	<body>
+	<body onload="onload()">
 		<script src="/static/three.min.js"></script>
         <script src="/socket.io/socket.io.js"></script>
 		<script>
             var socket = io('http://210.71.78.200:2319');
+
+            for(;;){
+                var name = prompt("請輸入你的名字","name")
+                if(name!=null)break;
+            }
+            var join = confirm("請問是否遊玩遊戲?(旁觀模式請選擇取消)")
+            if(join!=null && name!=null)socket.emit("loginreq",name,join)
+    
+            function onload(){
+                                
+            }
+
+
 
 			//set Introduction
 			container = document.createElement( 'div' );

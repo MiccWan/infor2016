@@ -128,9 +128,21 @@ var chk = function(id){
     return 0;
 }
 
+var gameStart function(){
+    for(;;){    
+        if(waitingList.length>1){
+            playerList = [];
+            playerList[0] = waitingList.shift(1);
+            playerList[1] = waitingList.shift(1);
+        }
+    }
+}
+
+gameStart();
+
+
 io.sockets.on('connection', function(socket){
 	var id = socket.id;
-	playerList.push(id);
 	var name;
 	socket.on('loginreq', function(name,join){
 		if(join){

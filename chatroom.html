@@ -78,7 +78,11 @@
 	
 	var month = new Date().getMonth()+1;
 	var now = new Date().getFullYear().toString()+"-"+month.toString()+"-"+new Date().getDate().toString()+" "+new Date().getHours().toString()+":"+new Date().getMinutes().toString()+":"+new Date().getSeconds().toString();
-	var username = prompt("","");
+
+	for(;username==null;){
+		var username = prompt("請輸入你的名字","name")
+	}	
+
 
 	var sendtextfunction = function(){
 		var text = document.getElementById('text').value; 
