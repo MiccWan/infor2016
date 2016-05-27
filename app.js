@@ -9,6 +9,7 @@ var express = require('express')
 var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
+//var noty = require('noty');
 
 var http =  require('http');
 
@@ -197,7 +198,7 @@ io.sockets.on('connection', function(socket){
     })
 })
 
-server.listen(2329);
+server.listen(2316);
 
 
 
