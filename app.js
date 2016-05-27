@@ -129,18 +129,19 @@ var chk = function(id){
 }
 
 var gameStart = function(){
-    setInterval(function(){
-        if(waitingList.length>1){
-            playerList = [];
-            playerList[0] = waitingList.shift(1);
-            playerList[1] = waitingList.shift(1);
-            return ;
-        }
-    },100)
+	readyToStart-false;
+	if(waitingList.length>1)readyToStart=true;
+	if(readyToStart && playing == false){
+        playerList = [];
+        playerList[0] = waitingList.shift(1);
+        playerList[1] = waitingList.shift(1);
+        playing=true;
+        /*game start set.......*/
+    }
 }
 
-gameStart();
-
+var playing=false;
+var readyToStart = false;
 
 io.sockets.on('connection', function(socket){
 	var id = socket.id;
@@ -148,6 +149,7 @@ io.sockets.on('connection', function(socket){
 	socket.on('loginreq', function(name,join){
 		if(join){
 			waitingList.push({name:name,id:id});
+			gameStart();
 		}
 		onlineList.push({name:name,id:id});
 	})
@@ -157,7 +159,9 @@ io.sockets.on('connection', function(socket){
             var winner=chk(id);
             if(winner){
                 // socket.emit('gameOver',playerList[winner-1]["name"])
-                socket.emit('gameOver',"got it!")
+                socket.emit('gameOver',"got it!");
+                playing=false;
+                setTimeout(gameStart(),20000);
             }
             if( id%4 != 3)gameStat[id+1]=3;
             io.emit('downed',gameStat,player);
