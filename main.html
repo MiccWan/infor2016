@@ -33,7 +33,7 @@
 <script src="/static/jquery.noty.packaged.min.js"></script>
 <script type="text/javascript" src="/static/relax.js"></script>
 <script type="text/javascript">
-	var socket = io('http://localhost:2315')
+	var socket = io('http://weak2315.infor.org')
 
     for(;;){
         var name = prompt("請輸入你的名字","name")
@@ -92,7 +92,8 @@
     inputarea.style.left = '20px';
     inputarea.addEventListener('keypress', function(e){
         if(e.keyCode === 13){
-            var msg = document.getElementById('text').value;
+            var msg = inputarea.value;
+            inputarea.value = "";
             socket.emit('sendchat',msg,name)
         }
     },false)
