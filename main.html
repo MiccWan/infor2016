@@ -20,7 +20,7 @@
 	</frameset>-->
 	<body>
     <div id="chat" style="position:absolute; left:20px; bottom:100px;"></div>
-    <input id="text" type="text" style="position:absolute; left:20px; bottom:30px;">
+    <!--<input id="text" type="text" style="position:absolute; left:20px; bottom:30px;">-->
 	</body>
 </html>
 
@@ -82,13 +82,6 @@
     //$('#testtt').noty({text: 'NOTY - a jquery notification library!'});
     //$('#testtt').noty({text: 'NOTY - a jquery notification library!2'});
     
-    document.getElementById('text').addEventListener('keypress', function(e){
-        if(e.keyCode === 13){
-            var msg = document.getElementById('text').value;
-            socket.emit('sendchat',msg,name)
-        }
-    },false)
-
 
     var notycnt = 0;
     socket.on("pubchat",function(text ,sendname ,time){
@@ -104,7 +97,7 @@
 
     //3DBingo part
 
-   //set Introduction
+    //set Introduction
     container = document.createElement( 'div' );
     document.body.appendChild( container );
     var info = document.createElement( 'div' );
@@ -114,6 +107,21 @@
     info.style.textAlign = 'center';
     info.innerHTML = '<h1>1P:Blue,2P:Red  GrayCube means Clickable!</h1>';
     container.appendChild( info );
+
+    var inputarea = document.createElement('input');
+    inputarea.style.position = 'absolute';
+    inputarea.style.bottom = '20px';
+    inputarea.style.left = '20px';
+    inputarea.addEventListener('keypress', function(e){
+        if(e.keyCode === 13){
+            var msg = document.getElementById('text').value;
+            socket.emit('sendchat',msg,name)
+        }
+    },false)
+    document.body.appendChild(inputarea);
+
+
+
 
     //setting up the renderer
     var scene = new THREE.Scene();
