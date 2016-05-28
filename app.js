@@ -136,8 +136,10 @@ var readyToStart = false;
 
 var gameStart = function(){
 	readyToStart=false;
-	if(waitingList.length>1)readyToStart=true;
+	if(waitingList.length>1) readyToStart=true;
 	if(readyToStart && playing == false){
+        waitingList.push(playerList[0]);
+        waitingList.push(playerList[1]);
     	playerList = [];
         playerList[0] = waitingList.shift(1);
 	    playerList[1] = waitingList.shift(1);
