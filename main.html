@@ -33,7 +33,7 @@
 <script src="/static/jquery.noty.packaged.min.js"></script>
 <script type="text/javascript" src="/static/relax.js"></script>
 <script type="text/javascript">
-	var socket = io('http://weak2315.infor.org')
+	var socket = io('http://localhost:2315')
 
     for(;;){
         var name = prompt("請輸入你的名字","name")
@@ -42,58 +42,63 @@
     var join = confirm("請問是否遊玩遊戲?(旁觀模式請選擇取消)")
     if(join!=null && name!=null)socket.emit("loginreq",name,join)
 
-    function onload(){
-                        
-    }
- 
-	window.addEventListener('load',function(){
-	})
 
-    // noty setDefault
-    $.noty.defaults = {
-        layout: 'bottomleft',
-        theme: 'relax', // or 'relax'
-        type: 'alert',
-        text: '', // can be html or string
-        dismissQueue: true, // If you want to use queue feature set this true
-        template: '<div class="noty_message" style="height:50px;"><span class="noty_text"></span><div class="noty_close"></div></div>',
-        animation: {
-            open: {height: 'toggle'}, // or Animate.css class names like: 'animated bounceInLeft'
-            close: {height: 'toggle'}, // or Animate.css class names like: 'animated bounceOutLeft'
-            easing: 'swing',
-            speed: 500 // opening & closing animation speed
-        },
-        timeout: 5000, // delay for closing event. Set false for sticky notifications
-        force: false, // adds notification to the beginning of queue when set to true
-        modal: false,
-        maxVisible: 5, // you can set max visible notification for dismissQueue true option,
-        killer: false, // for close all notifications before show
-        closeWith: ['click'], // ['click', 'button', 'hover', 'backdrop'] // backdrop click will close all notifications
-        callback: {
-            onShow: function() {},
-            afterShow: function() {},
-            onClose: function() {},
-            afterClose: function() {},
-            onCloseClick: function() {},
-        },
-        buttons: false // an array of buttons
-    };
+ //    // noty setDefault
+ //    $.noty.defaults = {
+ //        layout: 'bottomleft',
+ //        theme: 'relax', // or 'relax'
+ //        type: 'alert',
+ //        text: '', // can be html or string
+ //        dismissQueue: true, // If you want to use queue feature set this true
+ //        template: '<div class="noty_message" style="height:50px;"><span class="noty_text"></span><div class="noty_close"></div></div>',
+ //        animation: {
+ //            open: {height: 'toggle'}, // or Animate.css class names like: 'animated bounceInLeft'
+ //            close: {height: 'toggle'}, // or Animate.css class names like: 'animated bounceOutLeft'
+ //            easing: 'swing',
+ //            speed: 500 // opening & closing animation speed
+ //        },
+ //        timeout: 5000, // delay for closing event. Set false for sticky notifications
+ //        force: false, // adds notification to the beginning of queue when set to true
+ //        modal: false,
+ //        maxVisible: 5, // you can set max visible notification for dismissQueue true option,
+ //        killer: false, // for close all notifications before show
+ //        closeWith: ['click'], // ['click', 'button', 'hover', 'backdrop'] // backdrop click will close all notifications
+ //        callback: {
+ //            onShow: function() {},
+ //            afterShow: function() {},
+ //            onClose: function() {},
+ //            afterClose: function() {},
+ //            onCloseClick: function() {},
+ //        },
+ //        buttons: false // an array of buttons
+ //    };
 
-    //$('#testtt').noty({text: 'NOTY - a jquery notification library!'});
-    //$('#testtt').noty({text: 'NOTY - a jquery notification library!2'});
+ //    //$('#testtt').noty({text: 'NOTY - a jquery notification library!'});
+ //    //$('#testtt').noty({text: 'NOTY - a jquery notification library!2'});
     
 
-    var notycnt = 0;
-    socket.on("pubchat",function(text ,sendname ,time){
-		//$('#chat').append("<p class='mes'>"+sendname+" : "+text+'</p>'+'<p class="time">'+time+'</p>');
-		$('#chat').after().noty({
-            text: "<p class='mes'>"+sendname+" : "+text+'</p>'+'<p class="time">'+time+'</p>',
-            template: '<div class="noty_message'+notycnt+'" style="height:50px;"><span class="noty_text"></span><div class="noty_close"></div></div>'
-        });
-        notycnt++;
-	});
+ //    var notycnt = 0;
+ //    socket.on("pubchat",function(text ,sendname ,time){
+	// 	//$('#chat').append("<p class='mes'>"+sendname+" : "+text+'</p>'+'<p class="time">'+time+'</p>');
+	// 	$('#chat').after().noty({
+ //            text: "<p class='mes'>"+sendname+" : "+text+'</p>'+'<p class="time">'+time+'</p>',
+ //            template: '<div class="noty_message'+notycnt+'" style="height:50px;"><span class="noty_text"></span><div class="noty_close"></div></div>'
+ //        });
+ //        notycnt++;
+	// });
 
-    
+ //    var inputarea = document.createElement('input');
+ //    inputarea.style.position = 'absolute';
+ //    inputarea.style.bottom = '20px';
+ //    inputarea.style.left = '20px';
+ //    inputarea.addEventListener('keypress', function(e){
+ //        if(e.keyCode === 13){
+ //            var msg = document.getElementById('text').value;
+ //            socket.emit('sendchat',msg,name)
+ //        }
+ //    },false)
+ //    document.body.appendChild(inputarea);
+
 
     //3DBingo part
 
@@ -107,21 +112,6 @@
     info.style.textAlign = 'center';
     info.innerHTML = '<h1>1P:Blue,2P:Red  GrayCube means Clickable!</h1>';
     container.appendChild( info );
-
-    var inputarea = document.createElement('input');
-    inputarea.style.position = 'absolute';
-    inputarea.style.bottom = '20px';
-    inputarea.style.left = '20px';
-    inputarea.addEventListener('keypress', function(e){
-        if(e.keyCode === 13){
-            var msg = document.getElementById('text').value;
-            socket.emit('sendchat',msg,name)
-        }
-    },false)
-    document.body.appendChild(inputarea);
-
-
-
 
     //setting up the renderer
     var scene = new THREE.Scene();
@@ -149,6 +139,25 @@
     scene.add( cube );
     cube.position.x = 2.5;
     cube.position.z = 2.5;
+
+    //set Icon
+    var cubesGeometry = new THREE.BoxGeometry( 0.5,0.5,0.5 );  
+    var p1Icon1 = new THREE.Mesh( cubesGeometry, colorBlue );
+    var p1Icon2 = new THREE.Mesh( cubesGeometry, colorBlue );
+    scene.add( p1Icon1 );
+    p1Icon1.position.x = -0.5;
+    p1Icon1.position.z = -0.5;
+    scene.add( p1Icon2 );
+    p1Icon2.position.x = 5.5; 
+    p1Icon2.position.z = 5.5; 
+    var p2Icon1 = new THREE.Mesh( cubesGeometry, colorRed );
+    var p2Icon2 = new THREE.Mesh( cubesGeometry, colorRed );
+    scene.add( p2Icon1 );
+    p2Icon1.position.x = -0.5;
+    p2Icon1.position.z = 5.5;
+    scene.add( p2Icon2 );
+    p2Icon2.position.x = 5.5;
+    p2Icon2.position.z = -0.5;
 
     //set up cubes
     var cubes = [];
@@ -208,6 +217,8 @@
 
     render();
 
+    var iam;
+
     function render(){
 
 
@@ -249,7 +260,8 @@
                 if( selected && selected.situation == 3 ) selected.material=colorClickable;
                     selected = FirstVisibleObject;
                 if( selected.situation == 3){
-                    selected.material = TransBlue;
+                    if(iam==1)selected.material = TransBlue;
+                    if(iam==2)selected.material = TransRed;
                 }
             }
         }
@@ -265,16 +277,33 @@
                 socket.emit('down', FirstVisibleObject.Num);
             }
         }
-        renderer.render(scene, camera);
 
-        socket.on('downed',function(gameStat,player){
-            renderRefresh(gameStat);
-            console.log("jizz");
-        })
-        socket.on('gameOver',function(name){
-            console.log(name);
-        })
+        //player hint
+        if(turn==1){
+            p1Icon1.rotation.y += 0.1;
+            p1Icon2.rotation.y += 0.1;
+        }
+        if(turn==2){
+            p2Icon1.rotation.y += 0.1;
+            p2Icon2.rotation.y += 0.1;
+        }
+        renderer.render(scene, camera);
     }
+
+    var turn=1;
+    socket.on('youare',function(youare){
+        iam=youare;
+        console.log(iam);
+        console.log("jizz111");
+    })
+    socket.on('downed',function(gameStat,k){
+        renderRefresh(gameStat);
+        console.log("jizz");
+        turn=k;
+    })
+    socket.on('gameOver',function(name){
+        console.log(name);
+    })
 
     //functions
 
@@ -317,6 +346,8 @@
             cubes[i].situation=gameStat[i];
         }
     }
+
+
 
 
 </script>

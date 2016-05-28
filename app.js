@@ -68,19 +68,24 @@ var waitingList = [];
 var onlineList = [];
 var player = 1;
 var gameStat = [];
-for(var i=0;i<64;i++){
-    if(i%4==0)gameStat[i]=3;
-    else gameStat[i]=0;
+
+var format = function(){
+	for(var i=0;i<64;i++){
+	    if(i%4==0)gameStat[i]=3;
+	    else gameStat[i]=0;
+	}
 }
 
-var chk = function(id){
-	var stat = [];
-	for(var i=0;i<4;i++){
-		stat[i]=[];
-		for(var j=0;j<4;j++){
-			stat[i][j]=[];
-		}
+format();
+
+var stat = [];
+for(var i=0;i<4;i++){
+	stat[i]=[];
+	for(var j=0;j<4;j++){
+		stat[i][j]=[];
 	}
+}
+var chk = function(id){
 
 	for(var i=0,j=0,k=0,l=0;l<64;i++,l++){
 	    if(i==4){
@@ -129,15 +134,25 @@ var chk = function(id){
     return 0;
 }
 
+var playing=false;
+var readyToStart = false;
+
 var gameStart = function(){
-    setInterval(function(){
-        if(waitingList.length>1){
-            playerList = [];
-            playerList[0] = waitingList.shift(1);
-            playerList[1] = waitingList.shift(1);
-            return ;
-        }
-    },100)
+	readyToStart=false;
+	if(waitingList.length>1)readyToStart=true;
+	setTimeout(function(){
+		if(readyToStart && playing == false){
+        	playerList = [];
+	        playerList[0] = waitingList.shift(1);
+    	    playerList[1] = waitingList.shift(1);
+        	playing=true;
+        	format();
+			io.to(playerList[0]["id"]).emit('youare',1);
+			io.to(playerList[1]["id"]).emit('youare',2);
+        /*game start set.......*/
+   		}
+	},1000);
+
 }
 
 gameStart();
@@ -146,25 +161,28 @@ gameStart();
 io.sockets.on('connection', function(socket){
 	var id = socket.id;
 	var name;
-    console.log("somebody in")
+	console.log("somebody in")
+	socket.emit('downed',gameStat,player);
 	socket.on('loginreq', function(name,join){
 		if(join){
 			waitingList.push({name:name,id:id});
 		}
 		onlineList.push({name:name,id:id});
+		gameStart();
 	})
 	socket.on('down',function(id){
-        if(socket.id==playerList[player-1]){
+        if(socket.id==playerList[player-1]["id"]){
             gameStat[id]=player;
             var winner=chk(id);
             if(winner){
                 // socket.emit('gameOver',playerList[winner-1]["name"])
                 socket.emit('gameOver',"got it!")
+                playing=false;
+                gameStart();
             }
             if( id%4 != 3)gameStat[id+1]=3;
-            io.emit('downed',gameStat,player);
-            //console.log(gameStat)
             player = player==1 ? 2 : 1;
+            io.emit('downed',gameStat,player);
         }
 	})
 	socket.on('disconnection',function(){
