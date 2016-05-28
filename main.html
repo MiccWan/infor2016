@@ -20,12 +20,17 @@
 	</frameset>-->
 	<body>
     <div id="chat" style="position:absolute; left:20px; bottom:100px;"></div>
+<<<<<<< HEAD
     <input id="text" type="text" style="position:absolute; left:20px; bottom:30px;">
+=======
+    <!--<input id="text" type="text" style="position:absolute; left:20px; bottom:30px;">-->
+>>>>>>> origin/merge
 	</body>
 </html>
 
 <!-- <script src="/static/jQuery/jquery-2.1.4.min.js"></script> -->
 <script src="/socket.io/socket.io.js"></script>
+<!--<script src="/noty/js/packaged/jquery.noty.packaged.min.js"></script>-->
 <!-- <script src="/static/jQuery/url.min.js"></script> -->
 <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
 <script src="/static/three.min.js"></script>
@@ -75,15 +80,15 @@
     //$('#testtt').noty({text: 'NOTY - a jquery notification library!2'});
     
 
- //    var notycnt = 0;
- //    socket.on("pubchat",function(text ,sendname ,time){
-	// 	//$('#chat').append("<p class='mes'>"+sendname+" : "+text+'</p>'+'<p class="time">'+time+'</p>');
-	// 	$('#chat').after().noty({
- //            text: "<p class='mes'>"+sendname+" : "+text+'</p>'+'<p class="time">'+time+'</p>',
- //            template: '<div class="noty_message"'+notycnt+'" style="height:50px;"><span class="noty_text"></span><div class="noty_close"></div></div>'
- //        });
- //        notycnt++;
-	// });
+    var notycnt = 0;
+    socket.on("pubchat",function(text ,sendname ,time){
+		//$('#chat').append("<p class='mes'>"+sendname+" : "+text+'</p>'+'<p class="time">'+time+'</p>');
+		$('#chat').after().noty({
+            text: "<p class='mes'>"+sendname+" : "+text+'</p>'+'<p class="time">'+time+'</p>',
+            template: '<div class="noty_message"'+notycnt+'" style="height:50px;"><span class="noty_text"></span><div class="noty_close"></div></div>'
+        });
+        notycnt++;
+	});
 
     var inputarea = document.createElement('input');
     inputarea.style.position = 'absolute';
@@ -372,7 +377,9 @@
     }
 
     function onDocumentMouseMove(event){
+
         // event.preventDefault();
+
         if(manualControl){
             longitude = -(savedX - event.clientX) * 0.1 + savedLongitude;
             latitude = -(event.clientY - savedY) * 0.1 + savedLatitude;
