@@ -9,7 +9,7 @@ var express = require('express')
 var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
-//var noty = require('noty');
+// var noty = require('noty');
 
 var http =  require('http');
 
@@ -103,8 +103,6 @@ var chk = function(id){
 	    stat[i][j][k]=gameStat[l];
 
 	}
-	// console.log(gameStat);
-	// console.log(stat);
 
 	// stat part
 	var x=id%4;
