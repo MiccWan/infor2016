@@ -9,6 +9,7 @@ var express = require('express')
 var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
+//var noty = require('noty');
 
 var http =  require('http');
 
@@ -67,19 +68,24 @@ var waitingList = [];
 var onlineList = [];
 var player = 1;
 var gameStat = [];
-for(var i=0;i<64;i++){
-    if(i%4==0)gameStat[i]=3;
-    else gameStat[i]=0;
+
+var format = function(){
+	for(var i=0;i<64;i++){
+	    if(i%4==0)gameStat[i]=3;
+	    else gameStat[i]=0;
+	}
 }
 
-var chk = function(id){
-	var stat = [];
-	for(var i=0;i<4;i++){
-		stat[i]=[];
-		for(var j=0;j<4;j++){
-			stat[i][j]=[];
-		}
+format();
+
+var stat = [];
+for(var i=0;i<4;i++){
+	stat[i]=[];
+	for(var j=0;j<4;j++){
+		stat[i][j]=[];
 	}
+}
+var chk = function(id){
 
 	for(var i=0,j=0,k=0,l=0;l<64;i++,l++){
 	    if(i==4){
@@ -128,61 +134,106 @@ var chk = function(id){
     return 0;
 }
 
-var gameStart = function(){
-	readyToStart-false;
-	if(waitingList.length>1)readyToStart=true;
-	if(readyToStart && playing == false){
-        playerList = [];
-        playerList[0] = waitingList.shift(1);
-        playerList[1] = waitingList.shift(1);
-        playing=true;
-        /*game start set.......*/
-    }
-}
-
 var playing=false;
 var readyToStart = false;
+
+var gameStart = function(){
+	readyToStart=false;
+	if(waitingList.length>1)readyToStart=true;
+	if(readyToStart && playing == false){
+    	playerList = [];
+        playerList[0] = waitingList.shift(1);
+	    playerList[1] = waitingList.shift(1);
+    	playing=true;
+    	format();
+    	io.emit('restart')
+		io.to(playerList[0]["id"]).emit('youare',1);
+		io.to(playerList[1]["id"]).emit('youare',2);
+		io.emit('downed',gameStat,player);
+    	/*game start set.......*/
+   	}
+}
+
+gameStart();
+
 
 io.sockets.on('connection', function(socket){
 	var id = socket.id;
 	var name;
+	console.log("somebody in")
+	socket.emit('loginHint',playing);
+	if(playing)socket.emit('downed',gameStat,player);
+	if(playing==false)socket.emit('downed',gameStat,3);
 	socket.on('loginreq', function(name,join){
 		if(join){
 			waitingList.push({name:name,id:id});
-			gameStart();
 		}
-		onlineList.push({name:name,id:id});
+		onlineList.push({name:name,id:socket.id});
+		gameStart();
 	})
 	socket.on('down',function(id){
-        if(socket.id==playerList[player-1]){
-            gameStat[id]=player;
-            var winner=chk(id);
-            if(winner){
-                // socket.emit('gameOver',playerList[winner-1]["name"])
-                socket.emit('gameOver',"got it!");
-                playing=false;
-                setTimeout(gameStart(),20000);
-            }
-            if( id%4 != 3)gameStat[id+1]=3;
-            io.emit('downed',gameStat,player);
-            //console.log(gameStat)
-            player = player==1 ? 2 : 1;
-        }
+		if(playing){
+			if(socket.id==playerList[player-1]["id"]){
+	            gameStat[id]=player;
+	            var winner=chk(id);
+	            if(winner){
+	                io.emit('gameOver',winner,playerList[winner-1]["name"],false)
+	                playing=false;
+	                console.log("there is a winner");
+	                for(var i=0;i<64;i++){
+	                	if(gameStat[i]==3)gameStat[i]=0;
+	                }
+	            	io.emit('downed',gameStat,3);
+	            	setTimeout(function(){
+	        			gameStart();
+	        		},10000);
+	            }
+	            else{
+		            if( id%4 != 3)gameStat[id+1]=3;
+		            player = player==1 ? 2 : 1;
+		            io.emit('downed',gameStat,player);	
+	            }
+        	}
+		}
 	})
-	socket.on('disconnection',function(){
+	socket.on('disconnect',function(){
 		for(var i=0;i<onlineList.length;i++){
 			if(onlineList[i]["id"]==id){
-				delete onlineList[i];
+				onlineList.splice(i,1);
+				console.log("onlineList remove success")
 			}
 		}
 		for(var i=0;i<waitingList.length;i++){
 			if(waitingList[i]["id"]==id){
-				delete waitingList[i];
+				waitingList.splice(i,1);
+				console.log("waitList remove success")
 			}
 		}
-		if(playerList[0]["id"]==id || playerList[1]["id"]==id){
-			io.emit('player leave');
+		if(playing){
+			if(playerList[0]["id"]==id){
+				io.emit('gameOver',2,playerList[1]["name"],true)
+	            playing=false;
+	            for(var i=0;i<64;i++){
+	            	if(gameStat[i]==3)gameStat[i]=0;
+	            }
+	        	io.emit('downed',gameStat,3);
+	        	setTimeout(function(){
+	        		gameStart();
+	        	},10000);
+			}
+			if(playerList[1]["id"]==id){
+				io.emit('gameOver',1,playerList[0]["name"],true)
+	            playing=false;
+	            for(var i=0;i<64;i++){
+	            	if(gameStat[i]==3)gameStat[i]=0;
+	            }
+	        	io.emit('downed',gameStat,3);
+	        	setTimeout(function(){
+	        		gameStart();
+	        	},10000);
+			}
 		}
+		console.log("somebody leave")
 	})
     
     //chatroom==========
@@ -201,7 +252,7 @@ io.sockets.on('connection', function(socket){
     })
 })
 
-server.listen(2329);
+server.listen(2315);
 
 
 

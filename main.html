@@ -3,63 +3,398 @@
 	<head>
 		<title>3D Connect 4</title>
 	</head>
-	<frameset cols="60%,*">
+    <style>
+    body { margin: 0; }
+	canvas { width: 100%; height: 100%; z-index: 1;}
+    .time {
+        font-size: 12px;
+        color: #aaaaaa;
+        text-align: right;
+        position: relative;
+        top: -10px
+    }
+    </style>
+	<!--<frameset cols="60%,*">
 		<frame src="3DConnect4.html">
 		<frame src="chatroom.html">
-	</frameset>
+	</frameset>-->
 	<body>
+    <div id="chat" style="position:absolute; left:20px; bottom:100px;"></div>
+    <!--<input id="text" type="text" style="position:absolute; left:20px; bottom:30px;">-->
 	</body>
 </html>
 
 <!-- <script src="/static/jQuery/jquery-2.1.4.min.js"></script> -->
 <script src="/socket.io/socket.io.js"></script>
+<!--<script src="/noty/js/packaged/jquery.noty.packaged.min.js"></script>-->
 <!-- <script src="/static/jQuery/url.min.js"></script> -->
+<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+<script src="/static/three.min.js"></script>
+<script src="/static/jquery.noty.packaged.min.js"></script>
+<script type="text/javascript" src="/static/relax.js"></script>
 <script type="text/javascript">
-	var socket = io('https://weak.infor.org')
+	var socket = io('http://localhost:2315')
 
-	window.addEventListener('load',function(){
+    for(;;){
+        var name = prompt("請輸入你的名字","name")
+        if(name!=null)break;
+    }
+    var join = confirm("請問是否遊玩遊戲?(旁觀模式請選擇取消)")
+    if(join!=null && name!=null)socket.emit("loginreq",name,join)
 
-		//login request
-		/*var name = prompt("name","請輸入你的名字",function(){
-			var join = confirm("請問是否加入遊戲?(旁觀模式請選擇取消)",function(){
-				if(name!=null){
-					socket.emit("loginreq",name,join)
-				}
-			})
-		})*/
+ //    // noty setDefault
+ //    $.noty.defaults = {
+ //        layout: 'bottomleft',
+ //        theme: 'relax', // or 'relax'
+ //        type: 'alert',
+ //        text: '', // can be html or string
+ //        dismissQueue: true, // If you want to use queue feature set this true
+ //        template: '<div class="noty_message" style="height:50px;"><span class="noty_text"></span><div class="noty_close"></div></div>',
+ //        animation: {
+ //            open: {height: 'toggle'}, // or Animate.css class names like: 'animated bounceInLeft'
+ //            close: {height: 'toggle'}, // or Animate.css class names like: 'animated bounceOutLeft'
+ //            easing: 'swing',
+ //            speed: 500 // opening & closing animation speed
+ //        },
+ //        timeout: 5000, // delay for closing event. Set false for sticky notifications
+ //        force: false, // adds notification to the beginning of queue when set to true
+ //        modal: false,
+ //        maxVisible: 5, // you can set max visible notification for dismissQueue true option,
+ //        killer: false, // for close all notifications before show
+ //        closeWith: ['click'], // ['click', 'button', 'hover', 'backdrop'] // backdrop click will close all notifications
+ //        callback: {
+ //            onShow: function() {},
+ //            afterShow: function() {},
+ //            onClose: function() {},
+ //            afterClose: function() {},
+ //            onCloseClick: function() {},
+ //        },
+ //        buttons: false // an array of buttons
+ //    };
 
-		document.getElementById('back').addEventListener('click', function(){
-			window.location='http://tdcweb.xyz:7122'
-		})
-		document.getElementById('login!').addEventListener('click', function(){
-			var usernam = document.getElementById('username').value
-			var passw = document.getElementById('pass').value
-			if(usernam == "" || passw == ""){
-				$('#wrn').text("invalid login")
-			}
-			else{
-				socket.emit('loginreq', usernam, passw)
-			}
-		})
-		document.getElementById('out').addEventListener('click', function(){
-			document.cookie = ""
-			location.reload(true)
-		})
-	})
-	socket.on('logindone', function(username, passwordd){
-		$('#wrn').text("successful login!")
-		$('#login').remove()
-		logined = true
-		whoami = username
-		pw = passwordd
-		var nowdate = new Date()
-		nowdate.setDate(nowdate.getDate()+ 3)
-		document.cookie = "username="+username+";pass="+pw+";expire"+nowdate.toGMTString()
-	})
-	socket.on('loginfail', function(){
-		$('#wrn').text("username or password wrong!")
-	})
-	socket.on('noperadd', function(){
-		alert("jizz");
-	})
+ //    //$('#testtt').noty({text: 'NOTY - a jquery notification library!'});
+ //    //$('#testtt').noty({text: 'NOTY - a jquery notification library!2'});
+    
+
+ //    var notycnt = 0;
+ //    socket.on("pubchat",function(text ,sendname ,time){
+	// 	//$('#chat').append("<p class='mes'>"+sendname+" : "+text+'</p>'+'<p class="time">'+time+'</p>');
+	// 	$('#chat').after().noty({
+ //            text: "<p class='mes'>"+sendname+" : "+text+'</p>'+'<p class="time">'+time+'</p>',
+ //            template: '<div class="noty_message'+notycnt+'" style="height:50px;"><span class="noty_text"></span><div class="noty_close"></div></div>'
+ //        });
+ //        notycnt++;
+	// });
+
+ //    var inputarea = document.createElement('input');
+ //    inputarea.style.position = 'absolute';
+ //    inputarea.style.bottom = '20px';
+ //    inputarea.style.left = '20px';
+ //    inputarea.addEventListener('keypress', function(e){
+ //        if(e.keyCode === 13){
+ //            var msg = document.getElementById('text').value;
+ //            socket.emit('sendchat',msg,name)
+ //        }
+ //    },false)
+ //    document.body.appendChild(inputarea);
+
+
+    //3DBingo part
+
+    //set Introduction
+    // container = document.createElement( 'div' );
+    // document.body.appendChild( container );
+    // var info = document.createElement( 'div' );
+    // info.style.position = 'absolute';
+    // info.style.top = '20px';
+    // info.style.width = '100%';
+    // info.style.textAlign = 'center';
+    // info.innerHTML = '<h1>1P:Blue,2P:Red  GrayCube means Clickable!</h1>';
+    // container.appendChild( info );
+
+    //setting up the renderer
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera( 70, window.innerWidth/window.innerHeight, 1, 1000 );
+    var renderer = new THREE.WebGLRenderer();
+
+    renderer.setSize( window.innerWidth, window.innerHeight );
+    document.body.appendChild( renderer.domElement );
+    renderer.setClearColor( 0xbbbbbb );
+
+    //set material
+    var geometry = new THREE.BoxGeometry( 5, 0.1, 5  );
+    var winBox = new THREE.BoxGeometry( 0.7, 0.7, 0.7 );
+    var ballGeometry = new THREE.SphereGeometry(0.2, 32, 32);//特殊球球形
+    var colorTransparent= new THREE.MeshLambertMaterial( {  visible:false } );
+    var colorClickable = new THREE.MeshLambertMaterial( { color: 0x555555, opacity: 0.3, transparent: true } );
+    var colorBlue  = new THREE.MeshLambertMaterial( { color: 0x0000ff  } );
+    var TransBlue  = new THREE.MeshLambertMaterial( { color: 0x0000ff, opacity: 0.6, transparent: true } );
+    var colorRed   = new THREE.MeshLambertMaterial( { color: 0xff0000  } );
+    var TransRed   = new THREE.MeshLambertMaterial( { color: 0xff0000, opacity: 0.6, transparent: true } );
+    var colorGray  = new THREE.MeshLambertMaterial( { color: 0x222222  } );
+    var colorcube  = new THREE.MeshLambertMaterial( { color: 0x00ff00  } );
+
+    //set basic(called cube)
+    var cube =  new THREE.Mesh( geometry, colorcube );
+    scene.add( cube );
+    cube.position.x = 2.5;
+    cube.position.z = 2.5;
+
+    //set Icon
+    var cubesGeometry = new THREE.BoxGeometry( 0.5,0.5,0.5 );  
+    var p1Icon1 = new THREE.Mesh( cubesGeometry, colorBlue );
+    var p1Icon2 = new THREE.Mesh( cubesGeometry, colorBlue );
+    scene.add( p1Icon1 );
+    p1Icon1.position.x = -0.5;
+    p1Icon1.position.z = -0.5;
+    scene.add( p1Icon2 );
+    p1Icon2.position.x = 5.5; 
+    p1Icon2.position.z = 5.5; 
+    var p2Icon1 = new THREE.Mesh( cubesGeometry, colorRed );
+    var p2Icon2 = new THREE.Mesh( cubesGeometry, colorRed );
+    scene.add( p2Icon1 );
+    p2Icon1.position.x = -0.5;
+    p2Icon1.position.z = 5.5;
+    scene.add( p2Icon2 );
+    p2Icon2.position.x = 5.5;
+    p2Icon2.position.z = -0.5;
+
+    //set up cubes
+    var cubes = [];
+    var cubesGeometry = new THREE.BoxGeometry( 0.5,0.5,0.5 );
+    for(var f=0; f<64; f++){
+        var cubesSet=  new THREE.Mesh( cubesGeometry, colorTransparent );
+        cubes.push(cubesSet);
+        scene.add(cubes[f]);
+        cubes[f].situation=0;
+        cubes[f].Num = f;
+        if(f%4==0){
+            cubes[f].material = colorClickable;
+            cubes[f].situation = 3;
+        }
+    }
+
+    //set the cubes position
+    var moveCubes = function(k){
+        cubes[k].position.x += ( (k-k%16)/16 ) + 1;
+        cubes[k].position.y += k%4 + 0.4;
+        cubes[k].position.z += (k%16-k%4)/4 + 1;
+        renderer.render(scene, camera);
+    };
+    for(var N=0; N<64; N++)moveCubes(N);
+    
+    //set light
+    var ambientLight = new THREE.AmbientLight( 0x888888 ,0.5 );
+    scene.add( ambientLight );
+    var directionalLight = new THREE.DirectionalLight( 0xcccccc );
+    directionalLight.position.set( 1,2,2 ).normalize();
+    scene.add( directionalLight );
+    if(cube.material == colorcube)cube.material = colorGray;
+
+    //滑鼠控制視角
+    var manualControl = false;
+    var longitude = 0;
+    var latitude = 0;
+    var savedX;
+    var savedY;
+    var savedLongitude;
+    var savedLatitude;
+    var mouse = new THREE.Vector2();
+    camera.target = new THREE.Vector3(0, 0, 0);
+
+    // listeners
+    document.addEventListener("mousedown", onDocumentMouseDown, false);
+    document.addEventListener("mousemove", onDocumentMouseMove, false);
+    document.addEventListener("mouseup", onDocumentMouseUp, false);
+    
+    //set raycaster
+    var raycaster,INTERSECTED;
+        raycaster = new THREE.Raycaster();
+    var FirstVisibleObject;
+    var selected;
+    var player=1;
+    var moved = false;
+
+    render();
+
+    var iam;
+
+    function render(){
+
+
+        renderer.setSize( window.innerWidth,window.innerHeight);
+        requestAnimationFrame(render);
+
+        // limiting latitude from 0 to 85
+
+        latitude = Math.max(-85, Math.min(0, latitude));
+
+        //set camera
+
+        camera.target.x = 500 * Math.sin(THREE.Math.degToRad(90 - latitude)) * Math.cos(THREE.Math.degToRad(longitude));
+        camera.target.y = 500 * Math.cos(THREE.Math.degToRad(90 - latitude));
+        camera.target.z = 500 * Math.sin(THREE.Math.degToRad(90 - latitude)) * Math.sin(THREE.Math.degToRad(longitude));
+        camera.lookAt(camera.target);
+        camera.position.x = -camera.target.x/60 +2.5;
+        camera.position.y = -camera.target.y/60 + 1;
+        camera.position.z = -camera.target.z/60 +2.5;
+
+        //set raycaster
+
+        raycaster.setFromCamera( mouse, camera );
+        var intersects = raycaster.intersectObjects( scene.children );
+        if(intersects.length==0)FirstVisibleObject=null;
+        else{
+        for(var k=0; k < intersects.length; k++){
+            if( intersects[k].object.material != colorTransparent && intersects[k].object.geometry!= geometry ){
+                FirstVisibleObject = intersects[k].object;
+                break;
+            }
+            FirstVisibleObject = null;
+        }}
+
+        //player action
+
+        if ( FirstVisibleObject != null ) {
+            if ( selected != FirstVisibleObject ) {
+                if( selected && selected.situation == 3 ) selected.material=colorClickable;
+                    selected = FirstVisibleObject;
+                if( selected.situation == 3){
+                    if(iam==1)selected.material = TransBlue;
+                    if(iam==2)selected.material = TransRed;
+                }
+            }
+        }
+        else{
+            if(selected && selected.situation == 3)selected.material = colorClickable;
+            selected = null;
+        }
+
+        if( manualControl == true && moved==false ){
+            if( FirstVisibleObject && FirstVisibleObject.situation == 3){
+                moved = true;
+                socket.emit('down', FirstVisibleObject.Num);
+            }
+        }
+
+        //player hint
+        if(turn==1){
+            p1Icon1.rotation.y += 0.1;
+            p1Icon2.rotation.y += 0.1;
+        }
+        if(turn==2){
+            p2Icon1.rotation.y += 0.1;
+            p2Icon2.rotation.y += 0.1;
+        }
+        if(turn==3){
+            p1Icon1.rotation.y += 0.1;
+            p1Icon2.rotation.y += 0.1;
+            p2Icon1.rotation.y += 0.1;
+            p2Icon2.rotation.y += 0.1;
+        }
+        renderer.render(scene, camera);
+    }
+
+    var turn=3;
+    socket.on('restart',function(){
+        alert("Game Start!")
+        turn=1;
+        p1Icon1.material = colorBlue
+        p1Icon2.material = colorBlue;
+        p2Icon1.material = colorRed;
+        p2Icon2.material = colorRed;
+        p1Icon1.geometry = cubesGeometry;
+        p1Icon2.geometry = cubesGeometry;
+        p2Icon1.geometry = cubesGeometry;
+        p2Icon2.geometry = cubesGeometry;
+        renderer.setClearColor( 0xbbbbbb );
+    })
+    socket.on('youare',function(youare){
+        iam=youare;
+        if(iam==1){
+            alert("藍方先下，請下子");
+            renderer.setClearColor( 0xbbbbdd );
+        }
+        if(iam==2){
+            alert("紅方後下，請稍候");
+            renderer.setClearColor( 0xddbbbb );
+        }
+    })
+    socket.on('downed',function(gameStat,k){
+        renderRefresh(gameStat);
+        turn=k;
+    })
+    socket.on('gameOver',function(winner,winName,leave){
+        if(winner==1){
+            p2Icon1.material = colorBlue;
+            p2Icon2.material = colorBlue;
+            p1Icon1.geometry = winBox;
+            p1Icon2.geometry = winBox;
+            p2Icon1.geometry = winBox;
+            p2Icon2.geometry = winBox;
+            turn=3;
+            iam=null;
+            if(leave==false)alert("藍方 "+winName+" 勝利~ 10秒後等候另外兩位參賽者開啟新局");
+            if(leave==true)alert("紅方離開遊戲，藍方 "+winName+" 勝利~ 10秒後等候另外兩位參賽者開啟新局")
+        }
+        if(winner==2){
+            p1Icon1.material = colorRed;
+            p1Icon2.material = colorRed;
+            p1Icon1.geometry = winBox;
+            p1Icon2.geometry = winBox;
+            p2Icon1.geometry = winBox;
+            p2Icon2.geometry = winBox;
+            turn=3;
+            iam=null;
+            if(leave==false)alert("紅方 "+winName+" 勝利~ 10秒後等候另外兩位參賽者開啟新局");
+            if(leave==true)alert("藍方離開遊戲，紅方 "+winName+" 勝利~ 10秒後等候另外兩位參賽者開啟新局")
+        }
+    })
+    socket.on('loginHint',function(playing){
+        if(playing==true)alert("遊戲已經開始，進入觀戰模式");
+        if(playing==false)alert("遊戲尚未開始，請稍候");
+        console.log("login access");
+    })
+
+    //functions
+
+    function onDocumentMouseDown(event){
+
+        event.preventDefault();
+
+        manualControl = true;
+
+        savedX = event.clientX;
+        savedY = event.clientY;
+
+        savedLongitude = longitude;
+        savedLatitude = latitude;
+        moved = false;
+    }
+
+    function onDocumentMouseMove(event){
+        event.preventDefault();
+        if(manualControl){
+            longitude = -(savedX - event.clientX) * 0.1 + savedLongitude;
+            latitude = -(event.clientY - savedY) * 0.1 + savedLatitude;
+        };
+        mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+        mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+        moved = true;
+    }
+
+    function onDocumentMouseUp(event){
+
+        manualControl = false;
+    }
+
+    function renderRefresh(gameStat){
+        for(var i=0;i<64;i++){
+            if(gameStat[i]==0)cubes[i].material=colorTransparent;
+            if(gameStat[i]==1)cubes[i].material=colorBlue;
+            if(gameStat[i]==2)cubes[i].material=colorRed;
+            if(gameStat[i]==3)cubes[i].material=colorClickable;
+            cubes[i].situation=gameStat[i];
+        }
+    }
 </script>
