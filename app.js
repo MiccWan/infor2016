@@ -146,6 +146,7 @@ gameStart();
 io.sockets.on('connection', function(socket){
 	var id = socket.id;
 	var name;
+    console.log("somebody in")
 	socket.on('loginreq', function(name,join){
 		if(join){
 			waitingList.push({name:name,id:id});
@@ -198,7 +199,7 @@ io.sockets.on('connection', function(socket){
     })
 })
 
-server.listen(2316);
+server.listen(2315);
 
 
 
