@@ -138,14 +138,14 @@ var gameStart = function(){
 	readyToStart=false;
 	if(waitingList.length>1) readyToStart=true;
 	if(readyToStart && playing == false){
-        waitingList.push(playerList[0]);
-        waitingList.push(playerList[1]);
+        console.log(waitingList);
     	playerList = [];
         playerList[0] = waitingList.shift(1);
 	    playerList[1] = waitingList.shift(1);
     	playing=true;
     	format();
     	io.emit('restart')
+    	console.log(playerList[0]["id"]);
 		io.to(playerList[0]["id"]).emit('youare',1);
 		io.to(playerList[1]["id"]).emit('youare',2);
 		io.emit('downed',gameStat,player);
@@ -183,6 +183,8 @@ io.sockets.on('connection', function(socket){
 	                	if(gameStat[i]==3)gameStat[i]=0;
 	                }
 	            	io.emit('downed',gameStat,3);
+	                waitingList.push(playerList[1]);
+        			waitingList.push(playerList[0]);
 	            	setTimeout(function(){
 	        			gameStart();
 	        		},10000);
@@ -216,6 +218,7 @@ io.sockets.on('connection', function(socket){
 	            	if(gameStat[i]==3)gameStat[i]=0;
 	            }
 	        	io.emit('downed',gameStat,3);
+        		waitingList.push(playerList[1]);
 	        	setTimeout(function(){
 	        		gameStart();
 	        	},10000);
@@ -227,11 +230,13 @@ io.sockets.on('connection', function(socket){
 	            	if(gameStat[i]==3)gameStat[i]=0;
 	            }
 	        	io.emit('downed',gameStat,3);
+	        	waitingList.push(playerList[0]);
 	        	setTimeout(function(){
 	        		gameStart();
 	        	},10000);
 			}
 		}
+		playerList = [];
 		console.log("somebody leave")
 	})
     
