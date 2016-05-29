@@ -148,6 +148,7 @@ var gameStart = function(){
     	console.log(playerList[0]["id"]);
 		io.to(playerList[0]["id"]).emit('youare',1);
 		io.to(playerList[1]["id"]).emit('youare',2);
+		player=1;
 		io.emit('downed',gameStat,player);
     	/*game start set.......*/
    	}
@@ -170,11 +171,11 @@ io.sockets.on('connection', function(socket){
 		onlineList.push({name:name,id:socket.id});
 		gameStart();
 	})
-	socket.on('down',function(id){
+	socket.on('down',function(num){
 		if(playing){
-			if(socket.id==playerList[player-1]["id"]){
-	            gameStat[id]=player;
-	            var winner=chk(id);
+			if(id==playerList[player-1]["id"]){
+	            gameStat[num]=player;
+	            var winner=chk(num);
 	            if(winner){
 	                io.emit('gameOver',winner,playerList[winner-1]["name"],false)
 	                playing=false;
@@ -190,7 +191,7 @@ io.sockets.on('connection', function(socket){
 	        		},10000);
 	            }
 	            else{
-		            if( id%4 != 3)gameStat[id+1]=3;
+		            if( num%4 != 3)gameStat[num+1]=3;
 		            player = player==1 ? 2 : 1;
 		            io.emit('downed',gameStat,player);	
 	            }
@@ -198,6 +199,7 @@ io.sockets.on('connection', function(socket){
 		}
 	})
 	socket.on('disconnect',function(){
+		console.log(playerList);
 		for(var i=0;i<onlineList.length;i++){
 			if(onlineList[i]["id"]==id){
 				onlineList.splice(i,1);
@@ -236,7 +238,6 @@ io.sockets.on('connection', function(socket){
 	        	},10000);
 			}
 		}
-		playerList = [];
 		console.log("somebody leave")
 	})
     
@@ -256,7 +257,7 @@ io.sockets.on('connection', function(socket){
     })
 })
 
-server.listen(2316);
+server.listen(80);
 
 
 
