@@ -148,6 +148,7 @@ var gameStart = function(){
     	console.log(playerList[0]["id"]);
 		io.to(playerList[0]["id"]).emit('youare',1);
 		io.to(playerList[1]["id"]).emit('youare',2);
+		player=1;
 		io.emit('downed',gameStat,player);
     	/*game start set.......*/
    	}
@@ -164,17 +165,32 @@ io.sockets.on('connection', function(socket){
 	if(playing)socket.emit('downed',gameStat,player);
 	if(playing==false)socket.emit('downed',gameStat,3);
 	socket.on('loginreq', function(name,join){
+        if(typeof(name)==string){
+            name = name.replace(/&/g,"&amp;");
+            name = name.replace(/</g,"&lt;");
+            name = name.replace(/>/g,"&gt;");
+        }
+        if(typeof(join)==string){
+            join = join.replace(/&/g,"&amp;");
+            join = join.replace(/</g,"&lt;");
+            join = join.replace(/>/g,"&gt;");
+        }
 		if(join){
 			waitingList.push({name:name,id:id});
 		}
 		onlineList.push({name:name,id:socket.id});
 		gameStart();
 	})
-	socket.on('down',function(id){
+	socket.on('down',function(num){
+        if(typeof(num)==string){
+            num = num.replace(/&/g,"&amp;");
+            num = num.replace(/</g,"&lt;");
+            num = num.replace(/>/g,"&gt;");
+        }
 		if(playing){
-			if(socket.id==playerList[player-1]["id"]){
-	            gameStat[id]=player;
-	            var winner=chk(id);
+			if(id==playerList[player-1]["id"]){
+	            gameStat[num]=player;
+	            var winner=chk(num);
 	            if(winner){
 	                io.emit('gameOver',winner,playerList[winner-1]["name"],false)
 	                playing=false;
@@ -190,7 +206,7 @@ io.sockets.on('connection', function(socket){
 	        		},10000);
 	            }
 	            else{
-		            if( id%4 != 3)gameStat[id+1]=3;
+		            if( num%4 != 3)gameStat[num+1]=3;
 		            player = player==1 ? 2 : 1;
 		            io.emit('downed',gameStat,player);	
 	            }
@@ -198,6 +214,7 @@ io.sockets.on('connection', function(socket){
 		}
 	})
 	socket.on('disconnect',function(){
+		console.log(playerList);
 		for(var i=0;i<onlineList.length;i++){
 			if(onlineList[i]["id"]==id){
 				onlineList.splice(i,1);
@@ -236,7 +253,6 @@ io.sockets.on('connection', function(socket){
 	        	},10000);
 			}
 		}
-		playerList = [];
 		console.log("somebody leave")
 	})
     
@@ -247,6 +263,16 @@ io.sockets.on('connection', function(socket){
     },1000)
 
     socket.on('sendchat', function(text,name){
+        if(typeof(text)==string){
+            text = text.replace(/&/g,"&amp;");
+            text = text.replace(/</g,"&lt;");
+            text = text.replace(/>/g,"&gt;");
+        }
+        if(typeof(name)==string){
+            name = name.replace(/&/g,"&amp;");
+            name = name.replace(/</g,"&lt;");
+            name = name.replace(/>/g,"&gt;");
+        }
         console.log(name+" "+text+" "+now);
         io.emit("pubchat", text, name ,now);
     });
