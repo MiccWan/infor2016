@@ -256,20 +256,4 @@ io.sockets.on('connection', function(socket){
     })
 })
 
-server.listen(2316);
-
-
-
-// Mongo Example
-// MongoClient.connect('mongodb://localhost:27017/datbs',function(err,db){
-// 	db.collection('users').find({"username":creater, "pass":crpw}).count(function(err,cnt){
-// 		if(cnt == 0){
-// 			socket.emit('noperadd');
-// 		}
-// 		else{
-// 			count++;
-// 			db.collection('datbs').insert({"id": count.toString(), "time": now, "title": title, "descr": descr, "tag": tag, "creater": creater});
-// 			db.collection('counting').insert({});
-// 		}
-// 	})
-// })
+server.listen(3334);
