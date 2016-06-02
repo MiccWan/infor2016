@@ -336,8 +336,14 @@
             p2Icon2.geometry = winBox;
             turn=3;
             iam=null;
-            if(leave==false)alert("藍方 "+winName+" 勝利~ 10秒後等候另外兩位參賽者開啟新局");
-            if(leave==true)alert("紅方離開遊戲，藍方 "+winName+" 勝利~ 10秒後等候另外兩位參賽者開啟新局")
+            setTimeout(function(){
+                if(leave==false){
+                    alert("藍方 "+winName+" 勝利~ 10秒後等候另外兩位參賽者開啟新局");
+                }
+                if(leave==true){
+                    alert("紅方離開遊戲，藍方 "+winName+" 勝利~ 10秒後等候另外兩位參賽者開啟新局");
+                }
+            },10)
         }
         if(winner==2){
             p1Icon1.material = colorRed;
@@ -348,8 +354,14 @@
             p2Icon2.geometry = winBox;
             turn=3;
             iam=null;
-            if(leave==false)alert("紅方 "+winName+" 勝利~ 10秒後等候另外兩位參賽者開啟新局");
-            if(leave==true)alert("藍方離開遊戲，紅方 "+winName+" 勝利~ 10秒後等候另外兩位參賽者開啟新局")
+            setTimeout(function(){
+                if(leave==false){
+                    alert("紅方 "+winName+" 勝利~ 10秒後等候另外兩位參賽者開啟新局");
+                }
+                if(leave==true){
+                    alert("藍方離開遊戲，紅方 "+winName+" 勝利~ 10秒後等候另外兩位參賽者開啟新局");
+                }
+            },10)
         }
     })
     socket.on('loginHint',function(playing){
